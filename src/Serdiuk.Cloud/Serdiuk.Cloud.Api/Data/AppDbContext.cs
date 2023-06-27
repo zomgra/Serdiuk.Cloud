@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Serdiuk.Cloud.Api.Data.Entity;
 using Serdiuk.Cloud.Api.Data.IdentityModels;
 
 namespace Serdiuk.Cloud.Api.Data
@@ -11,6 +12,7 @@ namespace Serdiuk.Cloud.Api.Data
 
         }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
+        public DbSet<FileObject> Files { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
