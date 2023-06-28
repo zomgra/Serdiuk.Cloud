@@ -6,6 +6,7 @@ using Serdiuk.Cloud.Api.Data;
 using Serdiuk.Cloud.Api.Infrastructure;
 using Serdiuk.Cloud.Api.Infrastructure.Interfaces;
 using Serdiuk.Cloud.Api.Services;
+using System.Reflection;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +18,16 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 var jwtConfig = new JwtConfig(builder.Configuration);
+
+builder.Services.AddCors(b =>
+{
+    b.AddDefaultPolicy(o =>
+    {
+        o.AllowAnyMethod()
+        .AllowAnyHeader()
+        .WithOrigins("http://localhost:3000");
+    });
+});
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(c =>
 {
@@ -46,6 +57,8 @@ builder.Services.AddAuthentication(option =>
         c.TokenValidationParameters = jwtConfig.GetTokenValidationParameters();
     });
 
+builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());    
+
 builder.Services.AddTransient<ITokenService, TokenService>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IFileService, FileService>();
@@ -63,6 +76,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseCors();
 
 app.MapControllers();
 await DataInitializer.Intialize(app.Services.CreateScope().ServiceProvider);

@@ -5,6 +5,6 @@
         public Guid Id { get; set; }
         public string UserId { get; set; }
         public string Name { get; set; }
-        public byte[] Data { get; set; }        
+        public string FilePath { get; set; }  
     }
 }

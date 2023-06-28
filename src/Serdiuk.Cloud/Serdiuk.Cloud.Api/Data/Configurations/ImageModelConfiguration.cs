@@ -11,7 +11,6 @@ namespace Serdiuk.Cloud.Api.Data.Configurations
             builder.HasKey(x => x.Id);
 
             builder.Property(x => x.Id);
-            builder.Property(x => x.Data).IsRequired();
             builder.Property(x => x.Name).IsRequired();
             builder.Property(x => x.UserId);
 

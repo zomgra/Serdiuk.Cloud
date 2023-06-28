@@ -3,16 +3,19 @@ using Microsoft.EntityFrameworkCore;
 using Serdiuk.Cloud.Api.Data;
 using Serdiuk.Cloud.Api.Data.Entity;
 using Serdiuk.Cloud.Api.Infrastructure.Interfaces;
+using System.IO;
 
 namespace Serdiuk.Cloud.Api.Services
 {
     public class FileService : IFileService
     {
         private readonly AppDbContext _context;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public FileService(AppDbContext context)
+        public FileService(AppDbContext context, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public Task<Result> DeleteFileByIdAsync(Guid id)
@@ -22,53 +25,64 @@ namespace Serdiuk.Cloud.Api.Services
 
         public async Task<Result<FileObject>> GetFileByIdAsync(Guid id, string userId)
         {
-            var entity = await _context.Files.FirstOrDefaultAsync(x=>x.Id == id);
-            if (entity == null)
-                return Result.Fail("File not found");
-            if (entity.UserId != userId)
-                return Result.Fail("You haven`t permissions for wathing this file");
-            return Result.Ok(entity);
-        }
+            var fileDirectory = Path.Combine(_webHostEnvironment.ContentRootPath + "files", userId);
+            if (!Directory.Exists(fileDirectory))
+            {
+                return Result.Fail("No found file");
+            }
+            var file = await _context.Files.FirstOrDefaultAsync(x => x.Id == id);
+            if (file == null)
+                return Result.Fail("No found file");
+            if (file.UserId != userId)
+                return Result.Fail("It`s not your file");
 
-        public async Task<Result<IEnumerable<FileObject>>> GetFilesByUserIdAsync(string userId)
-        {
-            var entity = _context.Files.Where(x => x.UserId == userId).AsEnumerable();
-            if (entity == null || !entity.Any())
-                return Result.Fail("Files not found");
-
-            return Result.Ok(entity);
-        }
-
-        public Task<Result> RenameFileAsync(string name, Guid id, string userId)
-        {
-            throw new NotImplementedException();
+            return file;
         }
 
         public async Task<Result> UploadFileAsync(IFormFile file, string userId)
         {
+            var fileDirectory = Path.Combine(_webHostEnvironment.ContentRootPath, "files", userId);
+            if (!Directory.Exists(fileDirectory))
+            {
+                Directory.CreateDirectory(fileDirectory);
+            }
+            var id = Guid.NewGuid();
+            var fileName = id + "_" + file.FileName;
+            var filePath = Path.Combine(fileDirectory, fileName);
             try
             {
-                using (var ms = new MemoryStream())
+                using (var fs = file.OpenReadStream())
                 {
-                    await file.CopyToAsync(ms);
+                    await file.CopyToAsync(fs);
                     var newFile = new FileObject
                     {
-                        Data = ms.ToArray(),
+                        FilePath = filePath,
                         Name = file.FileName,
+                        Id = id,
                         UserId = userId,
                     };
-                    await _context.Files.AddAsync(newFile);
+                    await _context.AddAsync(newFile);
                     await _context.SaveChangesAsync();
                     return Result.Ok();
                 }
             }
             catch
             {
-                return Result.Fail("Saving Failure");
+                return Result.Fail("Error save file");
             }
+
+        }
+        public Task<Result<IEnumerable<FileObject>>> GetFilesByUserIdAsync(string userId)
+        {
+            var entities = _context.Files.Where(x => x.UserId == userId).AsEnumerable();
+            if (entities == null || !entities.Any())
+            {
+                return Task.FromResult(Result.Fail<IEnumerable<FileObject>>("Files not found"));
+            }
+            return Task.FromResult(Result.Ok(entities));
         }
 
-        public Task<Result> UploadManyFilesAsync(IFormFileCollection file, string userId)
+        public Task<Result> RenameFileAsync(string name, Guid id, string userId)
         {
             throw new NotImplementedException();
         }

@@ -26,7 +26,7 @@ namespace Serdiuk.Cloud.Api.Services
         {
             await _context.RefreshTokens.AddAsync(new RefreshToken
             {
-                ExpiresAt = DateTime.UtcNow.AddMinutes(10),
+                ExpiresAt = DateTime.UtcNow.AddMinutes(1000),
                 IsRevoked = false,
                 Token = token,
                 UserId = userId,
@@ -49,7 +49,7 @@ namespace Serdiuk.Cloud.Api.Services
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToUniversalTime().ToString()),
                 }),
-                Expires = DateTime.Now.AddMinutes(1),
+                Expires = DateTime.Now.AddMinutes(100),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
             };
             var token = jwtTokenHandler.CreateToken(tokenDescriptor);

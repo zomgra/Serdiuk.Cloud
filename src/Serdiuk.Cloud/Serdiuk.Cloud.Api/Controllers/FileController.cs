@@ -1,51 +1,71 @@
-﻿using FluentResults;
+﻿using AutoMapper;
+using FluentResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Serdiuk.Cloud.Api.Exceptions;
+using Serdiuk.Cloud.Api.Extentions;
 using Serdiuk.Cloud.Api.Infrastructure.Interfaces;
+using Serdiuk.Cloud.Api.Models;
+using System.Web.Http.Results;
 
 namespace Serdiuk.Cloud.Api.Controllers
 {
     [ApiController]
-    [Authorize]
-    [Route("api/[controller]/[action]")]
+    //[Authorize]
+    [Route("api/[controller]")]
     public class FileController : ControllerBase
     {
         private readonly IFileService _fileService;
-        private readonly string UserId;
-        public FileController(IFileService fileService, UserManager<IdentityUser> userManager)
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly IMapper _mapper;
+        public FileController(IFileService fileService, UserManager<IdentityUser> userManager, IMapper mapper)
         {
             _fileService = fileService;
-            UserId = userManager.GetUserId(User);
+            _userManager = userManager;
+            _mapper = mapper;
         }
-     
-        [HttpPost]
+
+        [HttpPost("upload")]
         public async Task<IActionResult> UploadFileAsync(IFormFile file)
         {
-            var result = await _fileService.UploadFileAsync(file, UserId);
-            return HandleResult(result);
+            var userId = "4B680A2F-0683-4DBD-9FBE-79BEF4BFE1C6";// _userManager.GetUserId(User);
+            var result = await _fileService.UploadFileAsync(file, userId);
+            HandleResult(result);
+
+            return Ok();
         }
 
-        [HttpGet]
+        [HttpGet("get-all")]
         public async Task<IActionResult> GetFilesByUserId()
         {
-            var result = await _fileService.GetFilesByUserIdAsync(UserId);
-            return HandleResult(result);
-        }
-
-
-
-        private IActionResult HandleResult<T>(Result<T> result)
-        {
+            var userId = "4B680A2F-0683-4DBD-9FBE-79BEF4BFE1C6";//_userManager.GetUserId(User);
+            var result = await _fileService.GetFilesByUserIdAsync(userId);
             if (!result.IsSuccess)
-                return BadRequest(string.Join(", ", result.Errors.Select(x => x.Reasons)));
-            return Ok(result.Value);
+                //throw new CloudBadRequestException(string.Join(", ", result.Reasons.Select(x => x.Message)));
+                return BadRequest();
+
+            var response = _mapper.Map<List<FileViewModel>>(result.Value);
+            
+            return Ok(response);
+
         }
-        private IActionResult HandleResult(Result result)
+        [HttpGet("get/{id}")]
+        public async Task<IActionResult> GetFileByIdAsync(Guid id)
         {
-            if (!result.IsSuccess)
-                return BadRequest(string.Join(", ", result.Errors.Select(x => x.Reasons)));
-            return Ok(result);
+            var userId = "4B680A2F-0683-4DBD-9FBE-79BEF4BFE1C6";//_userManager.GetUserId(User);
+            var result = await _fileService.GetFileByIdAsync(id, userId);
+            HandleResult(result);
+
+            var stream = new FileStream(result.Value.FilePath, FileMode.Open);
+            
+                return File(stream, result.Value.GetMimeType(), result.Value.Name);
+            
+
+        }
+        private void HandleResult(ResultBase result)
+        {
+
         }
     }
 }
