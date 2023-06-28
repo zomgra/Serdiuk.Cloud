@@ -31,8 +31,7 @@ namespace Serdiuk.Cloud.Api.Controllers
         {
             var userId = "4B680A2F-0683-4DBD-9FBE-79BEF4BFE1C6";// _userManager.GetUserId(User);
             var result = await _fileService.UploadFileAsync(file, userId);
-            HandleResult(result);
-
+           
             return Ok();
         }
 

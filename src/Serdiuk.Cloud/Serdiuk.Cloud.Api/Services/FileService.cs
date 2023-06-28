@@ -1,4 +1,5 @@
 ﻿using FluentResults;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Serdiuk.Cloud.Api.Data;
 using Serdiuk.Cloud.Api.Data.Entity;
@@ -51,9 +52,11 @@ namespace Serdiuk.Cloud.Api.Services
             var filePath = Path.Combine(fileDirectory, fileName);
             try
             {
-                using (var fs = file.OpenReadStream())
+                var requestFileStream = file.OpenReadStream();
+
+                using (var fs = File.OpenWrite(filePath))
                 {
-                    await file.CopyToAsync(fs);
+                    await requestFileStream.CopyToAsync(fs);
                     var newFile = new FileObject
                     {
                         FilePath = filePath,
@@ -63,12 +66,13 @@ namespace Serdiuk.Cloud.Api.Services
                     };
                     await _context.AddAsync(newFile);
                     await _context.SaveChangesAsync();
-                    return Result.Ok();
                 }
+
+                return Result.Ok();
             }
-            catch
+            catch(Exception ex)
             {
-                return Result.Fail("Error save file");
+                return Result.Fail("Error save file: " + ex.Message);
             }
 
         }
