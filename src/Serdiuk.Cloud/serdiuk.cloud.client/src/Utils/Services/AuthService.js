@@ -23,8 +23,11 @@ export async function tryRefreshToken() {
 
         const result = await response.json();
         console.log(result);
-
-        return !result.Result;
+        if(!result.result){
+            localStorage.removeItem('token');
+            localStorage.removeItem('refresh');
+        }
+        return result.result;
 
     } catch (error) {
         console.error('An error occurred:', error);
@@ -48,6 +51,29 @@ export async function Register(name, email, password) {
 
             setNewTokens(data.token, data.refresh);
 
+            return data;
+        })
+        .catch(e => { console.log(e) });
+
+    return response;
+}
+export async function login(email, password){
+    let data = JSON.stringify({ email, password });
+    const response = await fetch(`${AUTH_URL}/login`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: data
+    })
+        .then(async responce => {
+            let data = await responce.json();
+            if (!data.result)
+                throw new Error(data.errors.join(', '))
+            
+            
+
+            setNewTokens(data.token, data.refresh);
             return data;
         })
         .catch(e => { console.log(e) });

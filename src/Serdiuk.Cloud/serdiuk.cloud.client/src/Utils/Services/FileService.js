@@ -38,6 +38,18 @@ export async function uploadFile(file) {
     }
 };
 
+export async function renameFile(newName, id) {
+    let data = await fetch(`${FILE_URL}/rename`, {
+        method: "POST",
+        headers: {
+            'Authorization': `Bearer ${await GetToken()}`,
+        },
+        body:JSON.stringify({newName,id})
+    });
+
+    return data.ok;
+}
+
 export async function downloadFile(id) {
     let data = fetch(`${FILE_URL}/download/${id}`, {
         method: "GET",

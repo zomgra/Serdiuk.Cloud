@@ -3,7 +3,7 @@ import UploadFileInput from '../../Components/UploadFile/UploadFileInput'
 
 const UploadFilePage = () => {
   return (
-    <div>
+    <div className='row'>
       <UploadFileInput/>
     </div>
   )

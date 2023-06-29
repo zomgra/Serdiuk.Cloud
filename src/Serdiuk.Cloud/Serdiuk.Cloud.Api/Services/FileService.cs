@@ -41,7 +41,7 @@ namespace Serdiuk.Cloud.Api.Services
             return file;
         }
 
-        public async Task<Result> UploadFileAsync(IFormFile file, string userId)
+        public async Task<Result> UploadFileAsync(IFormFile file, string userId, bool isPublic=false)
         {
             var fileDirectory = Path.Combine(_webHostEnvironment.ContentRootPath, "files", userId);
             if (!Directory.Exists(fileDirectory))
@@ -64,6 +64,7 @@ namespace Serdiuk.Cloud.Api.Services
                         Name = file.FileName,
                         Id = id,
                         UserId = userId,
+                        IsPublic = isPublic
                     };
                     await _context.AddAsync(newFile);
                     await _context.SaveChangesAsync();
@@ -111,9 +112,15 @@ namespace Serdiuk.Cloud.Api.Services
             }
         }
 
-        public Task<Result> ChangeFilePublicAsync(Guid id, string userId)
+        public async Task<Result> ChangeFilePublicAsync(Guid id, string userId)
         {
-            throw new NotImplementedException();
+            var entity = await _context.Files.FirstOrDefaultAsync(x => x.Id == id);
+            if (entity == null) return Result.Fail("File not found");
+            if (entity.UserId != userId) return Result.Fail("You haven`t permissions to change this file");
+
+            entity.IsPublic = !entity.IsPublic;
+            await _context.SaveChangesAsync();
+            return Result.Ok();
         }
     }
 }

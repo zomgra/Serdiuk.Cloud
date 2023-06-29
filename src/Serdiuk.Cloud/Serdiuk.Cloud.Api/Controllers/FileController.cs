@@ -7,6 +7,7 @@ using Serdiuk.Cloud.Api.Exceptions;
 using Serdiuk.Cloud.Api.Extentions;
 using Serdiuk.Cloud.Api.Infrastructure.Interfaces;
 using Serdiuk.Cloud.Api.Models;
+using Serdiuk.Cloud.Api.Models.DTO.File;
 
 namespace Serdiuk.Cloud.Api.Controllers
 {
@@ -26,10 +27,21 @@ namespace Serdiuk.Cloud.Api.Controllers
         }
 
         [HttpPost("upload")]
-        public async Task<IActionResult> UploadFileAsync(IFormFile file)
+        public async Task<IActionResult> UploadFileAsync([FromBody] UploadFileRequestDto dto)
         {
             var userId = _userManager.GetUserId(User);
-            var result = await _fileService.UploadFileAsync(file, userId);
+            var result = await _fileService.UploadFileAsync(dto.File, userId, dto.IsPublic);
+
+            HandleResult(result);
+
+            return Ok();
+        }
+
+        [HttpPost("rename")]
+        public async Task<IActionResult> RenameFileAsync([FromBody] RenameFileRequestDto dto)
+        {
+            var userId = _userManager.GetUserId(User);
+            var result = await _fileService.RenameFileAsync(dto.NewName, dto.Id, userId);
 
             HandleResult(result);
 

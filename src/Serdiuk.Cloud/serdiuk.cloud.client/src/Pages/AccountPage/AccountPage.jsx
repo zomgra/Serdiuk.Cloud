@@ -1,36 +1,42 @@
 import React, { useState } from 'react'
 import RegisterForm from '../../Components/Account/RegisterForm';
 import LoginForm from '../../Components/Account/LoginForm';
-import { Register } from '../../Utils/Services/AuthService';
+import { Register, login } from '../../Utils/Services/AuthService';
 
 const AccountPage = () => {
 
   function handleLogin(e) {
     e.preventDefault();
+    let email = e.target.email.value;
+    let password = e.target.password.value;
+    login(email, password)
+  }
+  function handleRegister(e) {
+
+    e.preventDefault();
     let name = e.target.username.value;
     let email = e.target.email.value;
     let password = e.target.password.value;
 
-    let data = Register(name,email,password);
-    console.log(data);
-  }
-  function handleRegister(e) {
-
+    Register(name, email, password);
   }
 
   const [isLogin, setIsLogin] = useState();
   return (
-    <form className='' onSubmit={isLogin ? handleLogin : handleRegister}>
-      {isLogin ? (<RegisterForm />) : (<LoginForm />)}
+    <form className='justify-content-center mt-5' style={{ display: 'inline-block' }} onSubmit={isLogin ? handleLogin : handleRegister}>
+      {isLogin ? (<LoginForm />) : (<RegisterForm />)}
+
       {isLogin ? (
         <div className='row justify-content-center'>
-          <a className='btn btn-info col-3' onClick={() => setIsLogin(false)}>Already have account?</a>
-          <button  type='submit' className='col-3 btn btn-success mx-1'>Submit</button>
-        </div>) : (
+          <a className='btn btn-info col-3' onClick={() => setIsLogin(false)}>Create account</a>
+          <button type='submit' className='col-3 btn btn-success mx-4'>Log in</button>
+        </div>
+      ) : (
         <div className='row justify-content-center'>
-          <a className='btn btn-info col-3' onClick={() => setIsLogin(true)}>Create account</a>
-          <button type='submit' className='col-3 btn btn-success mx-1'>Submit</button>
-        </div>)}
+          <a className='btn btn-info col-3' onClick={() => setIsLogin(true)}>Already have account?</a>
+          <button type='submit' className='col-3 btn btn-success mx-4'>Submit</button>
+        </div>
+      )}
     </form>
   )
 }

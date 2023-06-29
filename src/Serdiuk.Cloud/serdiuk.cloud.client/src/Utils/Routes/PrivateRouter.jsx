@@ -9,7 +9,7 @@ const PrivateRouter = () => {
 
     useEffect(() => {
       async function setAuth() {
-          setAuthorize(canUseToken())
+          setAuthorize(await canUseToken())
           setIsLoading(false)
         }
         setAuth();

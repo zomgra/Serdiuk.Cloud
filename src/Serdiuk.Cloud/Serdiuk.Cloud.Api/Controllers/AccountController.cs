@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Serdiuk.Cloud.Api.Infrastructure.Interfaces;
 using Serdiuk.Cloud.Api.Models;
-using Serdiuk.Cloud.Api.Models.DTO;
+using Serdiuk.Cloud.Api.Models.DTO.Identity;
 
 namespace Serdiuk.Cloud.Api.Controllers
 {

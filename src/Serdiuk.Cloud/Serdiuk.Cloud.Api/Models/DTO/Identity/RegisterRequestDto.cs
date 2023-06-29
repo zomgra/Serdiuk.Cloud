@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Serdiuk.Cloud.Api.Models.DTO
+namespace Serdiuk.Cloud.Api.Models.DTO.Identity
 {
-    public class LoginRequestDto
+    public class RegisterRequestDto
     {
+        [Required]
+        public string Name { get; set; }
         [Required]
         public string Email { get; set; }
         [Required]

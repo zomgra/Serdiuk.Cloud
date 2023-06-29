@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import { FILE_URL } from '../../Utils/Configs/Constants';
 import { downloadFile, getAllFiles } from '../../Utils/Services/FileService';
+import { FileView } from '../../Components/Files/FileView';
 
 
 const FileList = () => {
@@ -18,10 +19,8 @@ const FileList = () => {
       <div>
         <h2>Список файлов</h2>
         {files.map(file => (
-          <div key={file.id}>
-            <a onClick={()=>downloadFile(file.id)}>
-              {file.name}
-            </a>
+          <div className='row' key={file.id}>
+            <FileView file={file}/>
           </div>
         ))}
       </div>

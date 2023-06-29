@@ -1,4 +1,4 @@
-﻿namespace Serdiuk.Cloud.Api.Models.DTO
+﻿namespace Serdiuk.Cloud.Api.Models.DTO.Identity
 {
     public class RefreshRequestDto
     {

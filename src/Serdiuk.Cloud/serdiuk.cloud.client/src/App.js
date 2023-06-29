@@ -6,6 +6,7 @@ import AccountPage from './Pages/AccountPage/AccountPage';
 import PrivateRouter from './Utils/Routes/PrivateRouter';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useEffect, useState } from 'react';
+import NavPanel from './Components/Navigation/NavPanel';
 
 
 function App() {
@@ -15,7 +16,8 @@ function App() {
   }, [])
 
   return (
-    <div className="App">
+    
+    <div className="d-flex justify-content-center">
       <Routes>
         <Route element={<PrivateRouter />}>
           <Route path='/' element={<FileList />}></Route>

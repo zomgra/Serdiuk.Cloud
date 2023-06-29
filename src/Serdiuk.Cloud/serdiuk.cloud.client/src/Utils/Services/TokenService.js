@@ -3,6 +3,8 @@ import { tryRefreshToken } from "./AuthService";
 export function setNewTokens(access, refresh){
     localStorage.setItem('token', access);
     localStorage.setItem('refresh', refresh);
+
+    window.location.href='/';
 }
 
 export function canUseToken() {
