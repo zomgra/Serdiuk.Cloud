@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Serdiuk.Cloud.Api.Data;
 using Serdiuk.Cloud.Api.Infrastructure;
 using Serdiuk.Cloud.Api.Infrastructure.Interfaces;
+using Serdiuk.Cloud.Api.Middlewares;
 using Serdiuk.Cloud.Api.Services;
 using System.Reflection;
 using System.Text;
@@ -79,6 +80,9 @@ app.UseAuthorization();
 app.UseCors();
 
 app.MapControllers();
+
+app.UseMiddleware<CloudExceptionMiddleware>();
+
 await DataInitializer.Intialize(app.Services.CreateScope().ServiceProvider);
 
 app.Run();

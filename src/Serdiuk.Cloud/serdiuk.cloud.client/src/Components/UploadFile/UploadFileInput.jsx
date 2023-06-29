@@ -1,5 +1,6 @@
 import React, {useState} from 'react'
 import { FILE_URL } from '../../Utils/Configs/Constants';
+import { uploadFile } from '../../Utils/Services/FileService';
 
 const UploadFileInput = () => {
   
@@ -9,30 +10,10 @@ const UploadFileInput = () => {
       setSelectedFile(event.target.files[0]);
     };
   
-    const handleUpload = () => {
-      if (selectedFile) {
-        const formData = new FormData();
-        formData.append('file', selectedFile);
-        fetch(`${FILE_URL}/upload`, {
-          method: 'POST',
-          body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-          console.log('File uploaded successfully');
-         
-        })
-        .catch(error => {
-          console.error('Error uploading file:', error);
-          
-        });
-      }
-    };
-  
     return (
       <div>
         <input type="file" onChange={handleFileChange} />
-        <button onClick={handleUpload}>Upload</button>
+        <button onClick={()=>uploadFile(selectedFile)}>Upload</button>
       </div>
     );
 }

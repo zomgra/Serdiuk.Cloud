@@ -34,8 +34,9 @@ namespace Serdiuk.Cloud.Api.Services
             var file = await _context.Files.FirstOrDefaultAsync(x => x.Id == id);
             if (file == null)
                 return Result.Fail("No found file");
-            if (file.UserId != userId)
-                return Result.Fail("It`s not your file");
+
+            if (!file.IsPublic && file.UserId != userId)
+                return Result.Fail("File is private");
 
             return file;
         }
@@ -70,7 +71,7 @@ namespace Serdiuk.Cloud.Api.Services
 
                 return Result.Ok();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return Result.Fail("Error save file: " + ex.Message);
             }
@@ -86,7 +87,31 @@ namespace Serdiuk.Cloud.Api.Services
             return Task.FromResult(Result.Ok(entities));
         }
 
-        public Task<Result> RenameFileAsync(string name, Guid id, string userId)
+        public async Task<Result> RenameFileAsync(string name, Guid id, string userId)
+        {
+            var entity = await _context.Files.FirstOrDefaultAsync(x => x.Id == id);
+            if (entity == null)
+                return Result.Fail("File not found");
+
+            if (entity.UserId != userId)
+                return Result.Fail("Is not your file");
+
+            var path = entity.FilePath;
+            var oldName = entity.Name;
+            entity.Name = name;
+            try
+            {
+                File.Move(Path.Combine(path, oldName), Path.Combine(path, name));
+                await _context.SaveChangesAsync();
+                return Result.Ok();
+            }
+            catch (Exception ex)
+            {
+                return Result.Fail("Error with saving: "+ex.Message);
+            }
+        }
+
+        public Task<Result> ChangeFilePublicAsync(Guid id, string userId)
         {
             throw new NotImplementedException();
         }
