@@ -3,13 +3,13 @@ import { canUseToken } from '../../Utils/Services/TokenService'
 
 const NavPanel = () => {
     function handleBrandClick() {
-
+        window.location.href = '/'
     }
     function handleViewFiles() {
-
+        window.location.href = '/'
     }
     function handleUploadFile() {
-
+        window.location.href = '/upload'
     }
     function handleLogOut() {
 
@@ -25,10 +25,10 @@ const NavPanel = () => {
                     </button>
                     <div className="collapse navbar-collapse" id="navbarNav">
                         <ul className="navbar-nav">
-                            <li className="nav-item">
+                            <li className="nav-item clickable">
                                 <a className="nav-link" onClick={handleViewFiles}>View files</a>
                             </li>
-                            <li className="nav-item">
+                            <li className="nav-item clickable">
                                 <a className="nav-link" onClick={handleUploadFile}>Upload File</a>
                             </li>
                         </ul>

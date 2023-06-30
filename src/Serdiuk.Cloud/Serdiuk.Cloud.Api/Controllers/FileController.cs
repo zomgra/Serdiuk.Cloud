@@ -27,17 +27,17 @@ namespace Serdiuk.Cloud.Api.Controllers
         }
 
         [HttpPost("upload")]
-        public async Task<IActionResult> UploadFileAsync([FromBody] UploadFileRequestDto dto)
+        public async Task<IActionResult> UploadFileAsync(IFormFile file)
         {
             var userId = _userManager.GetUserId(User);
-            var result = await _fileService.UploadFileAsync(dto.File, userId, dto.IsPublic);
+            var result = await _fileService.UploadFileAsync(file, userId, false);
 
             HandleResult(result);
 
             return Ok();
         }
 
-        [HttpPost("rename")]
+        [HttpPut("rename")]
         public async Task<IActionResult> RenameFileAsync([FromBody] RenameFileRequestDto dto)
         {
             var userId = _userManager.GetUserId(User);
@@ -64,13 +64,22 @@ namespace Serdiuk.Cloud.Api.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetFileByIdAsync(Guid id)
         {
-            var userId = _userManager.GetUserId(User);
+            var userId = _userManager.GetUserId(User); // Add checking userId if is null 
             var result = await _fileService.GetFileByIdAsync(id, userId);
             HandleResult(result);
 
             var stream = new FileStream(result.Value.FilePath, FileMode.Open);
 
             return File(stream, result.Value.GetMimeType(), result.Value.Name);
+        }
+        [HttpPut("public/{id}")]
+        public async Task<IActionResult> ChangeFilePublicAsync(Guid id)
+        {
+            var userId = _userManager.GetUserId(User);
+            var result = await _fileService.ChangeFilePublicAsync(id, userId);
+            HandleResult(result);
+
+            return Ok();
         }
         private void HandleResult(ResultBase result)
         {

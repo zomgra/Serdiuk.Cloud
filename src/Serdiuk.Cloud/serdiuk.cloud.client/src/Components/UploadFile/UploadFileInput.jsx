@@ -1,19 +1,15 @@
 import React, {useState} from 'react'
-import { FILE_URL } from '../../Utils/Configs/Constants';
 import { uploadFile } from '../../Utils/Services/FileService';
 
-const UploadFileInput = () => {
+const UploadFileInput = ({handleFileChange}) => {
   
     const [selectedFile, setSelectedFile] = useState(null);
-
-    const handleFileChange = (event) => {
-      setSelectedFile(event.target.files[0]);
-    };
+    
   
     return (
       <div>
-        <input type="file" onChange={handleFileChange} />
-        <button onClick={()=>uploadFile(selectedFile)}>Upload</button>
+        <input type="file" onChange={(event)=>setSelectedFile(event.target.files[0])} />
+        <button onClick={(event)=>handleFileChange(selectedFile)}>Upload</button>
       </div>
     );
 }

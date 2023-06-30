@@ -14,7 +14,7 @@ namespace Serdiuk.Cloud.Api.Data
         public static async Task Intialize(IServiceProvider provider)
         {
             var context = provider.GetService<AppDbContext>();
-            var isExists = (context.Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator).Exists();
+            var isExists = (context.Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator).Exists() && context.Users.Any();
 
 
             if (!isExists) return; // TODO : Throw db exception

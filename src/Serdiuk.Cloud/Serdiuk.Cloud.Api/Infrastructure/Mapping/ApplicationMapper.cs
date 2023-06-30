@@ -11,6 +11,7 @@ namespace Serdiuk.Cloud.Api.Infrastructure.Mapping
         {
             CreateMap<FileObject, FileViewModel>()
                 .ForMember(x => x.Id, x => x.MapFrom(d => d.Id))
+                .ForMember(x => x.IsPublic, x => x.MapFrom(d => d.IsPublic))
                 .ForMember(x => x.Name, x => x.MapFrom(d => d.Name));
         }
     }

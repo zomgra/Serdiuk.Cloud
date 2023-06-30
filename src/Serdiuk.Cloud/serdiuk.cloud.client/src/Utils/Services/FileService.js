@@ -14,37 +14,34 @@ export async function getAllFiles() {
 
 export async function uploadFile(file) {
     if (file) {
-
-        const headers = new Headers();
-        let token = await GetToken();
-        headers.append('Authorization', `Bearer ${token}`);
-        console.log(token);
         const formData = new FormData();
         formData.append('file', file);
-        fetch(`${FILE_URL}/upload`, {
+        const response = await fetch(`${FILE_URL}/upload`, {
             method: 'POST',
             body: formData,
-            headers: headers
+            headers: {
+
+                'Authorization': `Bearer ${await GetToken()}`,
+            }
         })
-            .then(response => response.json())
-            .then(data => {
-                console.log('File uploaded successfully');
 
-            })
-            .catch(error => {
-                console.error('Error uploading file:', error);
-
-            });
+        if (response.ok) {
+            console.log('File uploaded successfully!');
+        } else {
+            console.error('Error uploading file:', response.statusText);
+        }
+        return response.ok;
     }
 };
 
 export async function renameFile(newName, id) {
     let data = await fetch(`${FILE_URL}/rename`, {
-        method: "POST",
+        method: "PUT",
         headers: {
+            'Content-Type': 'application/json',
             'Authorization': `Bearer ${await GetToken()}`,
         },
-        body:JSON.stringify({newName,id})
+        body: JSON.stringify({ newName, id })
     });
 
     return data.ok;
@@ -72,4 +69,13 @@ export async function downloadFile(id) {
             document.body.appendChild(link);
             link.click();
         });
+}
+export async function changePublicFile(id) {
+    let data = await fetch(`${FILE_URL}/public/${id}`, {
+        method: "PUT",
+        headers: {
+            'Authorization': `Bearer ${await GetToken()}`,
+        },
+    })
+    return data.ok;
 }

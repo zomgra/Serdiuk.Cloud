@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -16,6 +17,19 @@ var builder = WebApplication.CreateBuilder(args);
 //builder.Services.AddControllersWithViews();
 
 builder.Services.AddControllers();
+builder.Services.Configure<FormOptions>(x =>
+{
+    x.ValueLengthLimit = int.MaxValue;
+    x.ValueCountLimit = int.MaxValue;
+    x.MultipartBodyLengthLimit = long.MaxValue;
+    x.MultipartBoundaryLengthLimit = int.MaxValue;
+    x.BufferBodyLengthLimit = long.MaxValue;
+    x.BufferBody = true;
+    x.MemoryBufferThreshold = int.MaxValue;
+    x.KeyLengthLimit = int.MaxValue;
+    x.MultipartHeadersLengthLimit = int.MaxValue;
+    x.MultipartHeadersCountLimit = int.MaxValue;
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 var jwtConfig = new JwtConfig(builder.Configuration);
@@ -29,6 +43,7 @@ builder.Services.AddCors(b =>
         .WithOrigins("http://localhost:3000");
     });
 });
+
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(c =>
 {

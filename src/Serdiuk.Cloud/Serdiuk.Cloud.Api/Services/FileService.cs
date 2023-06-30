@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Serdiuk.Cloud.Api.Data;
 using Serdiuk.Cloud.Api.Data.Entity;
+using Serdiuk.Cloud.Api.Extentions;
 using Serdiuk.Cloud.Api.Infrastructure.Interfaces;
 using System.IO;
 
@@ -41,7 +42,7 @@ namespace Serdiuk.Cloud.Api.Services
             return file;
         }
 
-        public async Task<Result> UploadFileAsync(IFormFile file, string userId, bool isPublic=false)
+        public async Task<Result> UploadFileAsync(IFormFile file, string userId, bool isPublic = false)
         {
             var fileDirectory = Path.Combine(_webHostEnvironment.ContentRootPath, "files", userId);
             if (!Directory.Exists(fileDirectory))
@@ -99,17 +100,31 @@ namespace Serdiuk.Cloud.Api.Services
 
             var path = entity.FilePath;
             var oldName = entity.Name;
-            entity.Name = name;
             try
             {
-                File.Move(Path.Combine(path, oldName), Path.Combine(path, name));
-                await _context.SaveChangesAsync();
-                return Result.Ok();
+                string directory = Path.GetDirectoryName(path);
+                var newName = (entity.Id+ "_"+ name);
+                string newFilePath = Path.Combine(directory, newName);
+                newFilePath = Path.ChangeExtension(newFilePath, Path.GetExtension(path));
+
+                if (File.Exists(path))
+                {
+                    File.Move(path, newFilePath);
+                    entity.Name = name + Path.GetExtension(path);
+                    entity.FilePath = newFilePath;
+                    await _context.SaveChangesAsync();
+                    return Result.Ok();
+                }
+                else
+                {
+                    Result.Fail("File not found.");
+                }
             }
             catch (Exception ex)
             {
-                return Result.Fail("Error with saving: "+ex.Message);
+                return Result.Fail("Error with saving: " + ex.Message);
             }
+            return Result.Fail("Error with saving");
         }
 
         public async Task<Result> ChangeFilePublicAsync(Guid id, string userId)
