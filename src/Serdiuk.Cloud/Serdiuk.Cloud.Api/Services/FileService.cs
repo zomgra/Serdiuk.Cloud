@@ -1,11 +1,9 @@
 ﻿using FluentResults;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Serdiuk.Cloud.Api.Data;
 using Serdiuk.Cloud.Api.Data.Entity;
-using Serdiuk.Cloud.Api.Extentions;
 using Serdiuk.Cloud.Api.Infrastructure.Interfaces;
-using System.IO;
 
 namespace Serdiuk.Cloud.Api.Services
 {
@@ -20,9 +18,35 @@ namespace Serdiuk.Cloud.Api.Services
             _webHostEnvironment = webHostEnvironment;
         }
 
-        public Task<Result> DeleteFileByIdAsync(Guid id)
+        public async Task<Result> DeleteFileByIdAsync(Guid id, string userId)
         {
-            throw new NotImplementedException();
+            var entity = await _context.Files.FirstOrDefaultAsync(x=>x.Id==id);
+
+            if (entity == null) return Result.Fail("File not found");
+            if (entity.UserId != userId) return Result.Fail("Your haven`t perrmisions to delete this file");
+
+            try
+            {
+                var filePath = entity.FilePath;
+                if (File.Exists(filePath))
+                {
+                 //   File.Delete(filePath);
+
+                    entity.IsRemove = true;
+                    await _context.SaveChangesAsync();
+                    return Result.Ok();
+                }
+                else
+                {
+                    Result.Fail("File not exists.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Result.Fail("Error with deleting file: " + ex.Message);
+            }
+
+            return Result.Ok();
         }
 
         public async Task<Result<FileObject>> GetFileByIdAsync(Guid id, string userId)

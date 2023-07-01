@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Serdiuk.Cloud.Api.Data.Entity;
 using Serdiuk.Cloud.Api.Data.IdentityModels;
+using System.Reflection.Emit;
 
 namespace Serdiuk.Cloud.Api.Data
 {
@@ -16,6 +17,9 @@ namespace Serdiuk.Cloud.Api.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.Entity<FileObject>().HasQueryFilter(x => !x.IsRemove);
+
             builder.ApplyConfigurationsFromAssembly(typeof(Program).Assembly);
         }
     }

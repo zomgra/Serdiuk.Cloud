@@ -3,8 +3,7 @@ using FluentResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Serdiuk.Cloud.Api.Exceptions;
-using Serdiuk.Cloud.Api.Extentions;
+using Serdiuk.Cloud.Api.Exceptions; 
 using Serdiuk.Cloud.Api.Infrastructure.Interfaces;
 using Serdiuk.Cloud.Api.Models;
 using Serdiuk.Cloud.Api.Models.DTO.File;
@@ -79,6 +78,18 @@ namespace Serdiuk.Cloud.Api.Controllers
             var result = await _fileService.ChangeFilePublicAsync(id, userId);
             HandleResult(result);
 
+            return Ok();
+        }
+
+        [HttpDelete("remove/{id}")]
+        public async Task<IActionResult> DeleteFileAsync(string id)
+        {
+            if (!Guid.TryParse(id, out Guid fileId))
+            {
+                return BadRequest("Invalid file id");
+            }
+            var userId = _userManager.GetUserId(User);
+            var result = await _fileService.DeleteFileByIdAsync(fileId, userId);
             return Ok();
         }
         private void HandleResult(ResultBase result)

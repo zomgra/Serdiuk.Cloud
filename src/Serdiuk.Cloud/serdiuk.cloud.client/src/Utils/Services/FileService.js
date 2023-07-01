@@ -47,6 +47,17 @@ export async function renameFile(newName, id) {
     return data.ok;
 }
 
+export async function removeFile(id) {
+    let data = await fetch(`${FILE_URL}/remove/${id}`,{
+        headers: {
+            'Authorization': `Bearer ${await GetToken()}`,
+            'Content-Type': 'application/json'
+        },
+        method:'DELETE',
+    })
+    return data.ok;
+}
+
 export async function downloadFile(id) {
     let data = fetch(`${FILE_URL}/download/${id}`, {
         method: "GET",

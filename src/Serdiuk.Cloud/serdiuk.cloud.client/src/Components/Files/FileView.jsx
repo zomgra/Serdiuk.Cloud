@@ -1,9 +1,13 @@
 import React, { useState } from 'react'
-import { changePublicFile, downloadFile, renameFile } from '../../Utils/Services/FileService';
+import { changePublicFile, downloadFile, removeFile, renameFile } from '../../Utils/Services/FileService';
 
 export const FileView = ({ file }) => {
     const [isEdit, setEdit] = useState(false);
     const [name, setName] = useState(file.name);
+
+    async function handleDelete(){
+        let ok = await removeFile(file.id)
+    }
 
     async function handleEdit() {
         await setEdit(!isEdit)
@@ -13,10 +17,10 @@ export const FileView = ({ file }) => {
         }
     }
 
-    async function handleChangePublic(){
+    async function handleChangePublic() {
         console.log(file.id);
         var res = await changePublicFile(file.id);
-        if(res){
+        if (res) {
             file.isPublic = !file.isPublic;
         }
     }
@@ -35,6 +39,12 @@ export const FileView = ({ file }) => {
                     <div className="col-1">
                         <i className="fa clickable fa-pencil fa-lg" aria-hidden="true" onClick={handleEdit}></i>
                     </div>
+                    <div className="col-4">
+
+                    </div>
+                    <div onClick={handleDelete} className="col-1 clickable">
+                        <i class="fa fa-trash fa-lg" aria-hidden="true"></i>
+                    </div>
                 </div>
             </div>
             <div className='col-12 row align-items-center mt-auto'>
@@ -45,7 +55,7 @@ export const FileView = ({ file }) => {
                 </div>
                 <div className="col">
                     <a onClick={handleChangePublic} className='clickable btn btn-sm btn-success mx-5 my-2'>
-                        Change Public <i  className="fa fa-user-secret" aria-hidden="true"></i>
+                        Change Public <i className="fa fa-user-secret" aria-hidden="true"></i>
                     </a>
                 </div>
             </div>

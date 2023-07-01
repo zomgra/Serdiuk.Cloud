@@ -9,6 +9,7 @@ namespace Serdiuk.Cloud.Api.Data.Entity
         public string Name { get; set; }
         public bool IsPublic { get; set; }
         public string FilePath { get; set; }
+        public bool IsRemove { get; set; }
 
         public string GetMimeType()
         {
