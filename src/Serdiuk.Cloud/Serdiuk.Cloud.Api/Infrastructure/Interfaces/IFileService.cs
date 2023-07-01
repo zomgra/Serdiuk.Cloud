@@ -5,7 +5,7 @@ namespace Serdiuk.Cloud.Api.Infrastructure.Interfaces
 {
     public interface IFileService
     {
-        Task<Result<IEnumerable<FileObject>>> GetFilesByUserIdAsync(string userId);
+        Task<Result<List<FileObject>>> GetFilesByUserIdAsync(string userId);
         Task<Result<FileObject>> GetFileByIdAsync(Guid id, string userId);
         Task<Result> DeleteFileByIdAsync(Guid id, string userId);
         Task<Result> UploadFileAsync(IFormFile file, string userId, bool isPublic=false);

@@ -6,7 +6,9 @@ export const FileView = ({ file }) => {
     const [name, setName] = useState(file.name);
 
     async function handleDelete(){
-        let ok = await removeFile(file.id)
+        if(window.confirm('do you sure want delete this file')){
+            let ok = await removeFile(file.id)
+        }
     }
 
     async function handleEdit() {
@@ -26,7 +28,7 @@ export const FileView = ({ file }) => {
     }
 
     return (
-        <div className={`d-flex row p-4 flex-grow-1 col-4 m-3 rounded border ${file.isPublic ? 'border-success' : 'border-danger'}`}>
+        <div className={`d-flex row p-4 flex-grow-1 col-4 m-3 rounded border border-3 ${file.isPublic ? 'border-success' : 'border-danger'}`}>
             <div className='row col-12'>
                 <div className='col-12 row'>
                     <div className="col-5">

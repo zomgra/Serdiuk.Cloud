@@ -30,7 +30,7 @@ namespace Serdiuk.Cloud.Api.Services
                 var filePath = entity.FilePath;
                 if (File.Exists(filePath))
                 {
-                 //   File.Delete(filePath);
+                 //   File.Delete(filePath);  // For deleting file in provide system
 
                     entity.IsRemove = true;
                     await _context.SaveChangesAsync();
@@ -103,14 +103,14 @@ namespace Serdiuk.Cloud.Api.Services
             }
 
         }
-        public Task<Result<IEnumerable<FileObject>>> GetFilesByUserIdAsync(string userId)
+        public async Task<Result<List<FileObject>>> GetFilesByUserIdAsync(string userId)
         {
-            var entities = _context.Files.Where(x => x.UserId == userId).AsEnumerable();
+            var entities =  await _context.Files.Where(x => x.UserId == userId).ToListAsync();
             if (entities == null || !entities.Any())
             {
-                return Task.FromResult(Result.Fail<IEnumerable<FileObject>>("Files not found"));
+                return Result.Fail("Files not found");
             }
-            return Task.FromResult(Result.Ok(entities));
+            return Result.Ok(entities);
         }
 
         public async Task<Result> RenameFileAsync(string name, Guid id, string userId)

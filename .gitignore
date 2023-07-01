@@ -4,6 +4,8 @@
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
 src/Serdiuk.Cloud/Serdiuk.Cloud.Api/files
+*.db
+src/Serdiuk.Cloud/Serdiuk.Cloud.Api/Cloud.db
 
 # User-specific files
 *.rsuser
